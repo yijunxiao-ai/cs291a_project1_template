@@ -48,12 +48,12 @@ def responseGetRoot(event:)
 end
 
 def responsePostToken(event:)
-  if event["headers"]["Content-Type"] != "application/json"
-    response(status: 415)
+  if event["headers"].key?("Content-Type") and event["headers"]["Content-Type"] != "application/json"
+    response(body: event["headers"], status: 415)
   else
     body = event["body"]
     begin
-      JSON.parse(body)
+      body = JSON.parse(body)
     rescue Exception => e
       response(status: 422)
     else
