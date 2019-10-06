@@ -36,9 +36,11 @@ def responseGetRoot(event:)
     begin
       decoded_token = JWT.decode token, ENV["JWT_SECRET"], true, { algorithm: 'HS256' }
     rescue JWT::ExpiredSignature
-      response(body: event, status: 401)
+      response(status: 401)
     rescue JWT::ImmatureSignature
-      response(body: event, status: 401)
+      response(status: 401)
+    rescue JWT::DecodeError
+      response(status: 403)
     else
       response(body: decoded_token[0]["data"], status: 200)
     end
@@ -101,7 +103,7 @@ if $PROGRAM_NAME == __FILE__
   token = JWT.encode payload, ENV['JWT_SECRET'], 'HS256'
   # Call /
   PP.pp main(context: {}, event: {
-               'headers' => { 'Authorization' => "Bearer #{token}",
+               'headers' => { 'Authorization' => "Bearer 12345}",
                               'Content-Type' => 'application/json' },
                'httpMethod' => 'GET',
                'path' => '/'
